@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <unistd.h>
 #define PATH_MAX 4096
-
 
 int which(const char *cmd_name, char **full_path) {
   char *path = getenv("PATH");
@@ -23,7 +22,7 @@ int which(const char *cmd_name, char **full_path) {
       free(path_copy);
       return 0;
     }
-    dir = strtok(NULL, ":");  
+    dir = strtok(NULL, ":");
   }
   return 1;
 }
@@ -108,20 +107,19 @@ int main() {
         args[strlen(args) - 1] = '\0';
         puts(args);
         pid_t pid;
-        pid = fork();  
+        pid = fork();
         if (pid < 0) {
           perror("fork");
           continue;
         }
         if (pid == 0) {
           // run command in child process
-          if (execl(full_path, command, args, NULL) == -1) 
+          if (execl(full_path, command, args, NULL) == -1)
             perror("execl failed");
-        } 
-          // wait for child process to finish
+        }
+        // wait for child process to finish
         int pid_status;
-        if (waitpid(pid, &pid_status, 0) == -1) 
-          perror("waitpid");
+        if (waitpid(pid, &pid_status, 0) == -1) perror("waitpid");
         free(full_path);
         continue;
       }
