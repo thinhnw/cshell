@@ -28,7 +28,7 @@ int main() {
           found = 1;
           break;
         }
-      if (!found) printf("%s: command not found\n", command);
+      if (!found) printf("%s: not found\n", command);
       continue;
     }
 
