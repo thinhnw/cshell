@@ -101,11 +101,8 @@ int main() {
     if (PATH != NULL) {
       char *full_path;
       if (which(command, &full_path) == 0) {
-        puts(full_path);
-        puts(command);
         char *args = input + strlen(command) + 1;
         args[strlen(args) - 1] = '\0';
-        puts(args);
         pid_t pid;
         pid = fork();
         if (pid < 0) {
