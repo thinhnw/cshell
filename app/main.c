@@ -10,12 +10,16 @@ int main() {
     // Wait for user input
     char input[100];
     fgets(input, 100, stdin);
-    input[strlen(input) - 1] = '\0';
 
-    if (strcmp(input, "exit 0") == 0) {
+    char *command = strtok(input, " \n");
+    if (command == NULL) {
+      continue; 
+    } else if (strcmp(command, "exit") == 0) {
       exit(0);
+    } else if (strcmp(command, "echo") == 0) {
+      printf("%s", input + strlen(command) + 1);
     } else {
-      printf("%s: command not found\n", input);
+      printf("%s: command not found\n", command);
     }
   }
   return 0;
