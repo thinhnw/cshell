@@ -43,7 +43,6 @@ int main() {
       while (dir != NULL) {
         DIR *dp = opendir(dir);
         if (dp == NULL) {
-          perror(dir);
           dir = strtok(NULL, ":");
           continue;
         }
