@@ -3,6 +3,30 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#define PATH_MAX 4096
+
+
+int which(const char *cmd_name, char **full_path) {
+  char *path = getenv("PATH");
+  if (!path) return 1;
+
+  char *path_copy = strdup(path);
+
+  char *dir = strtok(path_copy, ":");
+  while (dir) {
+    static char buffer[PATH_MAX];
+    snprintf(buffer, sizeof(buffer), "%s/%s", dir, cmd_name);
+    if (access(buffer, X_OK) == 0) {
+      *full_path = strdup(buffer);
+      free(path_copy);
+      return 0;
+    }
+    dir = strtok(NULL, ":");  
+  }
+  return 1;
+}
 
 int main() {
   const char *builtins[] = {"type", "exit", "echo"};
@@ -73,6 +97,34 @@ int main() {
     if (strcmp(command, "echo") == 0) {
       printf("%s", input + strlen(command) + 1);
       continue;
+    }
+
+    if (PATH != NULL) {
+      char *full_path;
+      if (which(command, &full_path) == 0) {
+        puts(full_path);
+        puts(command);
+        char *args = input + strlen(command) + 1;
+        args[strlen(args) - 1] = '\0';
+        puts(args);
+        pid_t pid;
+        pid = fork();  
+        if (pid < 0) {
+          perror("fork");
+          continue;
+        }
+        if (pid == 0) {
+          // run command in child process
+          if (execl(full_path, command, args, NULL) == -1) 
+            perror("execl failed");
+        } 
+          // wait for child process to finish
+        int pid_status;
+        if (waitpid(pid, &pid_status, 0) == -1) 
+          perror("waitpid");
+        free(full_path);
+        continue;
+      }
     }
 
     printf("%s: command not found\n", command);
