@@ -8,7 +8,7 @@
 
 #define INPUT_MAX 100
 #define PATH_MAX 4096
-const char *builtins[] = {"type", "exit", "echo"};
+const char *builtins[] = {"type", "exit", "echo", "pwd"};
 size_t num_builtins = sizeof(builtins) / sizeof(builtins[0]);
 
 int find_command_in_path(const char *cmd_name, char **full_path) {
@@ -33,7 +33,6 @@ int find_command_in_path(const char *cmd_name, char **full_path) {
 }
 
 void handle_type(const char *cmd) {
-  cmd = strtok(NULL, " \n");
   if (cmd == NULL) return;
 
   // check if cmd is a builtin
